@@ -7,26 +7,23 @@ public class DebugWindow : MonoBehaviour
 {
     public TextMeshPro textMesh;
 
-
-    void OnEnable()
+    void Awake()
     {
         Application.logMessageReceived += LogMessage;
     }
 
-    void OnDisable()
-    {
-        Application.logMessageReceived -= LogMessage;
-    }
+    //void OnEnable()
+    //{
+    //    Application.logMessageReceived += LogMessage;
+    //}
+
+    //void OnDisable()
+    //{
+    //    Application.logMessageReceived -= LogMessage;
+    //}
 
     public void LogMessage(string message, string stackTrace, LogType type)
     {
-        if (textMesh.text.Length > 300)
-        {
-            textMesh.text = message + "\n";
-        }
-        else
-        {
-            textMesh.text += message + "\n";
-        }
+        textMesh.text += message + "\n";
     }
 }
