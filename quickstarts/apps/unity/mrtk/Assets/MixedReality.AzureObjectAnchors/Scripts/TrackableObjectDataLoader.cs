@@ -58,9 +58,14 @@ namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
 
         public async Task<bool> LoadObjectModelsAsync(string modelPath)
         {
-            IObjectAnchorsService objectAnchorsService = ObjectAnchorsService.GetService();
-            Debug.Log($"{Application.persistentDataPath} {objectAnchorsService != null}");
+            var objectAnchorsService = ObjectAnchorsService.GetService();
+            if (objectAnchorsService == null)
+                Debug.LogError("Object Anchors Service null");
+
+            Debug.Log("Seach for ou files in: " + modelPath);
+
             string[] ouFiles = Directory.GetFiles(modelPath, "*.ou", SearchOption.AllDirectories);
+            Debug.Log($"Ou Files found: {ouFiles.Length}");
             foreach (var file in ouFiles)
             {
                 // Represent a model by TrackableObject, and load its model into OU service.
@@ -84,14 +89,13 @@ namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
                 {
                     trackableObject.ModelMesh = new Mesh();
                     await trackableObject.ModelMesh.SetFromObjectModel(trackableObject.ModelId);
-                    Debug.Log($"mesh has {trackableObject.ModelMesh.triangles.Length} indices");
+                    Debug.Log($"Loaded model with {trackableObject.ModelMesh.triangles.Length} indices");
 
                     trackableObject.logicalBoundingBox = objectAnchorsService.GetModelBoundingBox(trackableObject.ModelId);
                     _trackableObjects.Add(trackableObject);
                     _modelIdToTrackableObject.Add(trackableObject.ModelId, trackableObject);
 
-                    Debug.Log($"Loaded Model\n{trackableObject}");
-                       
+                    // Debug.Log($"Loaded Model\n{trackableObject}");
                 }
                 else
                 {
