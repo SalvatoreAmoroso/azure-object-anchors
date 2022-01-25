@@ -11,6 +11,9 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+#if WINDOWS_UWP
+using Windows.Storage;
+#endif
 
 namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
 {
@@ -336,12 +339,12 @@ namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
 
             bool foundModelsInAppPath = false;
             bool foundModelsInObjects3D = false;
-            
+
             // Read models from LocalState folder
-            foundModelsInAppPath = await _trackableObjectDataLoader.LoadObjectModelsAsync(Application.persistentDataPath);
+            foundModelsInAppPath = await _trackableObjectDataLoader.LoadObjectModelsAsync();
             // Read models from 3D Objects folder
 #if WINDOWS_UWP
-            foundModelsInObjects3D = await _trackableObjectDataLoader.LoadObjectModelsAsync(global::Windows.Storage.KnownFolders.Objects3D.Path);
+            // foundModelsInObjects3D = await _trackableObjectDataLoader.LoadObjectModelsAsync(global::Windows.Storage.KnownFolders.Objects3D.Path);
 #endif
 
             _environmentObservationVisuals = new GameObject("Environment Observation Visuals");

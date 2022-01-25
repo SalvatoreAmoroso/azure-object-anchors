@@ -56,16 +56,36 @@ namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
             return result;
         }
 
-        public async Task<bool> LoadObjectModelsAsync(string modelPath)
+        private async Task<string[]> GetOuFiles()
         {
+            List<string> files = new List<string>();
+
+#if WINDOWS_UWP
+            StorageFolder localFolder = await KnownFolders.Objects3D.GetFolderAsync("VBK_ObjectTracking");
+            var storageFiles = await localFolder.GetFilesAsync();
+
+            foreach (var storageFile in storageFiles)
+            {
+                Debug.Log(storageFile.FileType);
+                if (storageFile.FileType == ".ou")
+                {
+                    files.Add(storageFile.Path);
+                }
+            }
+#endif
+            return files.ToArray();
+        }
+
+        public async Task<bool> LoadObjectModelsAsync()
+        {
+            string[] ouFiles = await GetOuFiles();
+
             var objectAnchorsService = ObjectAnchorsService.GetService();
             if (objectAnchorsService == null)
                 Debug.LogError("Object Anchors Service null");
 
-            Debug.Log("Seach for ou files in: " + modelPath);
-
-            string[] ouFiles = Directory.GetFiles(modelPath, "*.ou", SearchOption.AllDirectories);
             Debug.Log($"Ou Files found: {ouFiles.Length}");
+
             foreach (var file in ouFiles)
             {
                 // Represent a model by TrackableObject, and load its model into OU service.
@@ -79,7 +99,7 @@ namespace Microsoft.Azure.ObjectAnchors.Unity.Sample
                 }
                 else
                 {
-#if WINDOWS_UWP                    
+#if WINDOWS_UWP
                     byte[] buffer = await ReadFileBytesAsync(trackableObject.ModelFilePath);
                     trackableObject.ModelId = await objectAnchorsService.AddObjectModelAsync(buffer);
 #endif // WINDOWS_UWP
